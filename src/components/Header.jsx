@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 export default function Header(){
+  const { user, logout } = useAuth()
     return (
         <>
             <div class="bg-white">
@@ -272,10 +274,15 @@ export default function Header(){
 
           <div class="ml-auto flex items-center">
             <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-              {/* <a href="#" class="text-sm font-medium text-gray-700 hover:text-gray-800">Sign in</a> */}
-              <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-gray-800">Login</Link>
+              {user ? 
+                <>
+                  <button className="text-sm font-medium text-gray-700 hover:text-gray-800" onClick={logout}>Logout</button>
+                </>
+                : <>
+                  <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-gray-800">Login</Link> 
+                </>
+              }
               <span class="h-6 w-px bg-gray-200" aria-hidden="true"></span>
-              {/* <a href="#" class="text-sm font-medium text-gray-700 hover:text-gray-800">Create account</a> */}
               <Link to="/register" className="text-sm font-medium text-gray-700 hover:text-gray-800">Create account</Link>
             </div>
 
