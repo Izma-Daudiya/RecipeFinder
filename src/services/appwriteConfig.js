@@ -9,4 +9,8 @@ client
 const databases = new Databases(client);
 const storage = new Storage(client);
 
+export const RECIPE_DB_ID = "683445150004eb8180df";
+export const RECIPE_COLLECTION_ID = "683449dd002b3581aa87"; 
+export const BUCKET_ID = "68344840003562fce331";
+
 export { client, databases, storage, ID };

@@ -1,7 +1,20 @@
 import Header from "../components/Header";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { databases, storage, RECIPE_DB_ID, RECIPE_COLLECTION_ID, BUCKET_ID } from "../services/appwriteConfig";
+import { ID } from "appwrite";
 
 export default function AddRecipe() {
+  
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) navigate("/login");
+  }, [user]);
+
   const categoryOptions = [
     "Breakfast", "Lunch", "Dinner", "Dessert", "Snack",
     "Vegan", "Vegetarian", "Non-Vegetarian", "Gluten-Free"
@@ -64,10 +77,42 @@ export default function AddRecipe() {
     setRecipe((prev) => ({ ...prev, steps: updated }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(recipe);
-  };
+
+    if (!user) return navigate("/login");
+
+    try {
+      let imageFileId = null;
+
+      // Upload image to Appwrite Storage
+      if (recipe.image) {
+        const file = await storage.createFile(BUCKET_ID, ID.unique(), recipe.image);
+        imageFileId = file.$id;
+      }
+
+      // Add to Appwrite Database
+      await databases.createDocument(RECIPE_DB_ID, RECIPE_COLLECTION_ID, ID.unique(), {
+        name: recipe.name,
+        categories: recipe.categories,
+        prepTime: parseInt(recipe.prepTime),
+        cookTime: parseInt(recipe.cookTime),
+        servings: parseInt(recipe.servings),
+        difficulty: recipe.difficulty,
+        ingredients: JSON.stringify(recipe.ingredients),
+        instructions: JSON.stringify(recipe.steps),
+        image: imageFileId,
+        uid: user.uid,
+        username: user.displayName || user.email
+      });
+
+      alert("Recipe added!");
+      navigate("/"); // Redirect on success
+    } catch (err) {
+      console.error("Failed to submit recipe:", err);
+      alert("Error adding recipe");
+    }
+};
 
   return (
     <>
