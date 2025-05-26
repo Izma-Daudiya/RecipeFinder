@@ -1,6 +1,6 @@
 import Header from "../components/Header";
 import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { databases, storage, RECIPE_DB_ID, RECIPE_COLLECTION_ID, BUCKET_ID } from "../services/appwriteConfig";
